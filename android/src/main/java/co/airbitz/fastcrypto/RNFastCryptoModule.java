@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.lambdaworks.crypto.SCrypt;
+import android.util.Base64;
 
 
 public class RNFastCryptoModule extends ReactContextBaseJavaModule {
@@ -23,17 +24,6 @@ public class RNFastCryptoModule extends ReactContextBaseJavaModule {
     return "RNFastCrypto";
   }
 
-  private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-  public static String bytesToHex(byte[] bytes) {
-    char[] hexChars = new char[bytes.length * 2];
-    for ( int j = 0; j < bytes.length; j++ ) {
-      int v = bytes[j] & 0xFF;
-      hexChars[j * 2] = hexArray[v >>> 4];
-      hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-    }
-    return new String(hexChars);
-  }
-
   @ReactMethod
   public void scrypt(String passwd,
                      String salt,
@@ -42,11 +32,15 @@ public class RNFastCryptoModule extends ReactContextBaseJavaModule {
                      Integer p,
                      Integer size,
                      Promise promise) {
-    try {
-      byte[] result = SCrypt.scrypt(passwd.getBytes(), salt.getBytes(), 1024, 8, 1, 32);
-      promise.resolve(bytesToHex(result));
-    } catch(Exception e) {
-      promise.reject(e);
-    }
+     try {
+       byte[] rawPassword = Base64.decode(passwd, Base64.DEFAULT);
+       byte[] rawSalt     = Base64.decode(salt, Base64.DEFAULT);
+       byte[] result = SCrypt.scrypt(rawPassword, rawSalt, N, r, p, size);
+
+       String resultStr = new String(Base64.encode(result, Base64.NO_WRAP));
+       promise.resolve(resultStr);
+     } catch(Exception e) {
+       promise.reject(e);
+     }
   }
 }

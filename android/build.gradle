@@ -24,6 +24,11 @@ android {
     lintOptions {
         abortOnError false
     }
+    sourceSets {
+        main {
+            jniLibs.srcDir file('jni/libs/')
+        }
+    }
 }
 
 repositories {
@@ -34,4 +39,3 @@ dependencies {
     compile "com.lambdaworks:scrypt:1.4.0"
     compile 'com.facebook.react:react-native:+'
 }
-  
