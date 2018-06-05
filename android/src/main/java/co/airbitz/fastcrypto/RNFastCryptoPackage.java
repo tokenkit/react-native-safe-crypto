@@ -16,7 +16,7 @@ public class RNFastCryptoPackage implements ReactPackage {
       return Arrays.<NativeModule>asList(new RNFastCryptoModule(reactContext));
     }
 
-    @Override
+    // @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
       return Collections.emptyList();
     }
